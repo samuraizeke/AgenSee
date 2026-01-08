@@ -24,7 +24,6 @@ const createClientSchema = z.object({
   email: z.string().email('Invalid email address').optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
   address: z.string().optional().nullable(),
-  notes: z.string().optional().nullable(),
 });
 
 const updateClientSchema = createClientSchema.partial();

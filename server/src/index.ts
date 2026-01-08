@@ -45,10 +45,12 @@ app.use('/api', validateJWT, routes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// Start server
-app.listen(config.port, () => {
-  console.log(`Server running on http://localhost:${config.port}`);
-  console.log(`Environment: ${config.nodeEnv}`);
-});
+// Start server only when running directly (not on Vercel)
+if (!process.env.VERCEL) {
+  app.listen(config.port, () => {
+    console.log(`Server running on http://localhost:${config.port}`);
+    console.log(`Environment: ${config.nodeEnv}`);
+  });
+}
 
 export default app;

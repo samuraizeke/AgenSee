@@ -11,7 +11,6 @@ export interface Client {
   email: string | null;
   phone: string | null;
   address: string | null;
-  notes: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -55,6 +54,14 @@ export interface Document {
   uploaded_at: string;
 }
 
+export interface ClientNote {
+  id: string;
+  client_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // API Request/Response types
 export interface CreateClientRequest {
   first_name: string;
@@ -62,7 +69,6 @@ export interface CreateClientRequest {
   email?: string;
   phone?: string;
   address?: string;
-  notes?: string;
 }
 
 export interface UpdateClientRequest extends Partial<CreateClientRequest> {}
@@ -91,6 +97,15 @@ export interface CreateActivityRequest {
 
 export interface UpdateActivityRequest extends Partial<CreateActivityRequest> {
   completed?: boolean;
+}
+
+export interface CreateClientNoteRequest {
+  client_id: string;
+  content: string;
+}
+
+export interface UpdateClientNoteRequest {
+  content: string;
 }
 
 // API Response wrapper
