@@ -9,8 +9,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "AgenSee | Agency Management CRM",
-  description: "Modern agency management system for insurance professionals",
+  title: "AgenSee MS",
+  description: "Agency Management System for insurance professionals",
 };
 
 export default function RootLayout({

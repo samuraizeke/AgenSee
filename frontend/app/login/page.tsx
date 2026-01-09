@@ -14,12 +14,12 @@ export default function LoginPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-foreground/10 backdrop-blur">
                 <span className="font-heading text-2xl font-bold">A</span>
               </div>
-              <span className="font-heading text-2xl font-semibold">AgenSee</span>
+              <span className="font-heading text-2xl font-semibold">AgenSee MS</span>
             </div>
           </div>
           <div className="space-y-6">
             <blockquote className="text-2xl font-light leading-relaxed">
-              &ldquo;AgenSee transformed how we manage our agency. We&apos;ve reduced renewal
+              &ldquo;AgenSee MS transformed how we manage our agency. We&apos;ve reduced renewal
               lapses by 40% and our clients love the proactive service.&rdquo;
             </blockquote>
             <div>
@@ -45,13 +45,13 @@ export default function LoginPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
                 <span className="font-heading text-xl font-bold text-primary-foreground">A</span>
               </div>
-              <span className="font-heading text-xl font-semibold">AgenSee</span>
+              <span className="font-heading text-xl font-semibold">AgenSee MS</span>
             </div>
           </div>
 
           {/* Header */}
           <div className="text-center lg:text-left">
-            <h1 className="text-2xl font-semibold tracking-tight">Welcome to AgenSee</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Welcome to AgenSee MS</h1>
             <p className="mt-2 text-muted-foreground">
               Sign in with your Google account to continue
             </p>

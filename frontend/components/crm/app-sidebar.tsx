@@ -104,7 +104,7 @@ export function AppSidebar({ user, onSignOut }: AppSidebarProps) {
           </div>
           {!isCollapsed && (
             <span className="font-heading text-xl font-semibold text-sidebar-foreground">
-              AgenSee
+              AgenSee MS
             </span>
           )}
         </Link>

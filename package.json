@@ -1,8 +1,8 @@
 {
-  "name": "agensee",
+  "name": "agensee-ms",
   "version": "1.0.0",
   "private": true,
-  "description": "AgenSee - Agency Management System",
+  "description": "AgenSee MS - Agency Management System",
   "workspaces": [
     "frontend",
     "backend"

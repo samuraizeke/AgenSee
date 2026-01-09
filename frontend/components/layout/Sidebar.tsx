@@ -34,7 +34,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center px-6">
         <Link href="/dashboard" className="text-xl font-bold text-white">
-          AgenSee
+          AgenSee MS
         </Link>
       </div>
 
@@ -64,7 +64,7 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="border-t border-gray-800 p-4">
-        <p className="text-xs text-gray-500">Agency Management System</p>
+        <p className="text-xs text-gray-500">AgenSee MS</p>
       </div>
     </aside>
   );

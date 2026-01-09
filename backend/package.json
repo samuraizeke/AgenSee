@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "private": true,
-  "description": "AgenSee API Server",
+  "description": "AgenSee MS API Server",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
