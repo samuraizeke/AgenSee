@@ -10,11 +10,9 @@ import type {
   CreateActivityForm,
 } from '@/types';
 
-// In production (Vercel), default to relative /api path for same-domain requests
-// In development, default to localhost:3001 where the Express server runs
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api');
+// API URL must be set via NEXT_PUBLIC_API_URL in production (pointing to Cloud Run backend)
+// In development, defaults to localhost:3001 where the Express server runs
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 class ApiError extends Error {
   constructor(public statusCode: number, message: string) {

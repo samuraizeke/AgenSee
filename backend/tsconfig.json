@@ -5,7 +5,7 @@
     "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -18,11 +18,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false,
-    "noImplicitOverride": true,
-    "paths": {
-      "@shared/*": ["../shared/src/*"]
-    }
+    "noImplicitOverride": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/scripts"]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", "scripts"]
 }
