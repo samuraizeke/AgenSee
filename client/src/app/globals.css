@@ -1,0 +1,245 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Nohemi Font Family */
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Thin-BF6438cc57e2011.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-ExtraLight-BF6438cc581502c.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Light-BF6438cc5702321.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Regular-BF6438cc579d934.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Medium-BF6438cc57ddecd.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-SemiBold-BF6438cc57db2ff.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Bold-BF6438cc577b524.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-ExtraBold-BF6438cc5761ae2.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/Nohemi-Black-BF6438cc565e67b.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Roboto', system-ui, sans-serif;
+  --font-heading: 'Nohemi', system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-sage: var(--sage);
+  --color-sage-foreground: var(--sage-foreground);
+  --color-warm: var(--warm);
+  --color-warm-foreground: var(--warm-foreground);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Custom Colors from User */
+  /* #f1eff0 - Off-white background */
+  /* #1a1818 - Near black foreground */
+  /* #7b8777 - Sage green primary */
+  /* #c5b5a5 - Beige/tan secondary */
+
+  --background: #f1eff0;
+  --foreground: #1a1818;
+  --card: #ffffff;
+  --card-foreground: #1a1818;
+  --popover: #ffffff;
+  --popover-foreground: #1a1818;
+
+  /* Primary - Sage green */
+  --primary: #7b8777;
+  --primary-foreground: #ffffff;
+
+  /* Secondary - Beige/tan */
+  --secondary: #c5b5a5;
+  --secondary-foreground: #1a1818;
+
+  /* Muted - Lighter beige */
+  --muted: #e8e2dd;
+  --muted-foreground: #5c5856;
+
+  /* Accent - Lighter sage */
+  --accent: #e5e8e4;
+  --accent-foreground: #1a1818;
+
+  /* Custom brand colors */
+  --sage: #7b8777;
+  --sage-foreground: #ffffff;
+  --warm: #c5b5a5;
+  --warm-foreground: #1a1818;
+
+  --destructive: #dc2626;
+  --border: #d4d0cd;
+  --input: #d4d0cd;
+  --ring: #7b8777;
+
+  /* Chart colors - using brand palette */
+  --chart-1: #7b8777;
+  --chart-2: #c5b5a5;
+  --chart-3: #9ca89a;
+  --chart-4: #a8998a;
+  --chart-5: #5c6359;
+
+  /* Sidebar */
+  --sidebar: #1a1818;
+  --sidebar-foreground: #f1eff0;
+  --sidebar-primary: #7b8777;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2d2b2b;
+  --sidebar-accent-foreground: #f1eff0;
+  --sidebar-border: #3d3a3a;
+  --sidebar-ring: #7b8777;
+}
+
+.dark {
+  --background: #1a1818;
+  --foreground: #f1eff0;
+  --card: #2d2b2b;
+  --card-foreground: #f1eff0;
+  --popover: #2d2b2b;
+  --popover-foreground: #f1eff0;
+  --primary: #9ca89a;
+  --primary-foreground: #1a1818;
+  --secondary: #3d3a3a;
+  --secondary-foreground: #f1eff0;
+  --muted: #3d3a3a;
+  --muted-foreground: #a8a5a3;
+  --accent: #3d3a3a;
+  --accent-foreground: #f1eff0;
+  --sage: #9ca89a;
+  --sage-foreground: #1a1818;
+  --warm: #d4c8bb;
+  --warm-foreground: #1a1818;
+  --destructive: #ef4444;
+  --border: #3d3a3a;
+  --input: #3d3a3a;
+  --ring: #9ca89a;
+  --chart-1: #9ca89a;
+  --chart-2: #d4c8bb;
+  --chart-3: #7b8777;
+  --chart-4: #c5b5a5;
+  --chart-5: #b8c4b6;
+  --sidebar: #121111;
+  --sidebar-foreground: #f1eff0;
+  --sidebar-primary: #9ca89a;
+  --sidebar-primary-foreground: #1a1818;
+  --sidebar-accent: #2d2b2b;
+  --sidebar-accent-foreground: #f1eff0;
+  --sidebar-border: #3d3a3a;
+  --sidebar-ring: #9ca89a;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Utility classes for fonts */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-sans);
+}
