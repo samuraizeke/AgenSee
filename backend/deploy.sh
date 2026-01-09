@@ -4,7 +4,7 @@ set -e
 # Configuration
 PROJECT_ID="agensee-app"
 SERVICE_NAME="agensee-backend"
-REGION="us-central1"
+REGION="us-east5"
 
 # Colors for output
 RED='\033[0;31m'

@@ -33,7 +33,9 @@ const env = parseEnv();
 // Parse CORS origins - support comma-separated list
 const parseCorsOrigin = (origin: string): string | string[] => {
   const origins = origin.split(',').map((o) => o.trim()).filter(Boolean);
-  return origins.length === 1 ? origins[0] : origins;
+  if (origins.length === 0) return origin;
+  if (origins.length === 1) return origins[0]!;
+  return origins;
 };
 
 export const config = {
