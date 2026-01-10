@@ -17,6 +17,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  SortableTableHead,
+  type SortOrder,
+} from '@/components/ui/sortable-table-head';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -51,6 +55,8 @@ interface ClientsTableProps {
   page: number;
   totalPages: number;
   search: string;
+  sortBy: string | null;
+  sortOrder: SortOrder;
 }
 
 export function ClientsTable({
@@ -59,10 +65,25 @@ export function ClientsTable({
   page,
   totalPages,
   search: initialSearch,
+  sortBy,
+  sortOrder,
 }: ClientsTableProps) {
   const [search, setSearch] = useState(initialSearch);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const handleSort = (column: string, order: SortOrder) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (order) {
+      params.set('sortBy', column);
+      params.set('sortOrder', order);
+    } else {
+      params.delete('sortBy');
+      params.delete('sortOrder');
+    }
+    params.set('page', '1');
+    router.push(`/dashboard/clients?${params.toString()}`);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,9 +128,7 @@ export function ClientsTable({
                 className="pl-9"
               />
             </div>
-            <Button type="submit" variant="secondary">
-              Search
-            </Button>
+            <Button type="submit">Search</Button>
             {initialSearch && (
               <Button type="button" variant="ghost" onClick={clearSearch}>
                 <X className="h-4 w-4 mr-1" />
@@ -124,15 +143,46 @@ export function ClientsTable({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="h-12 px-4 font-medium">Client</TableHead>
-                <TableHead className="h-12 px-4 font-medium">Contact</TableHead>
-                <TableHead className="h-12 px-4 font-medium w-[140px]">
-                  Policies
-                </TableHead>
-                <TableHead className="h-12 px-4 font-medium">
-                  Total Premium
-                </TableHead>
-                <TableHead className="h-12 px-4 font-medium">Created</TableHead>
+                <SortableTableHead
+                  column="last_name"
+                  label="Client"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="email"
+                  label="Contact"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="policy_count"
+                  label="Policies"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12 w-[140px]"
+                />
+                <SortableTableHead
+                  column="total_premium"
+                  label="Total Premium"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="created_at"
+                  label="Created"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
                 <TableHead className="h-12 px-4 font-medium w-[100px]">
                   Actions
                 </TableHead>
@@ -280,7 +330,6 @@ export function ClientsTable({
             </p>
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page <= 1}
@@ -292,7 +341,6 @@ export function ClientsTable({
                 Page {page} of {totalPages}
               </div>
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page >= totalPages}

@@ -36,7 +36,9 @@ async function getPolicies(
   page: number = 1,
   filter?: string,
   status?: string,
-  type?: string
+  type?: string,
+  sortBy?: string,
+  sortOrder?: string
 ): Promise<PoliciesResponse | null> {
   try {
     const params = new URLSearchParams({
@@ -46,6 +48,8 @@ async function getPolicies(
 
     if (status) params.set('status', status);
     if (type) params.set('type', type);
+    if (sortBy) params.set('sortBy', sortBy);
+    if (sortOrder) params.set('sortOrder', sortOrder);
 
     const url = `${getServerApiUrl()}/policies?${params}`;
 
@@ -69,7 +73,7 @@ async function getPolicies(
 export default async function PoliciesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; filter?: string; status?: string; type?: string }>;
+  searchParams: Promise<{ page?: string; filter?: string; status?: string; type?: string; sortBy?: string; sortOrder?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -82,8 +86,10 @@ export default async function PoliciesPage({
   const filter = params.filter || '';
   const status = params.status || '';
   const type = params.type || '';
+  const sortBy = params.sortBy || null;
+  const sortOrder = (params.sortOrder as 'asc' | 'desc' | null) || null;
 
-  const response = await getPolicies(accessToken, page, filter, status, type);
+  const response = await getPolicies(accessToken, page, filter, status, type, sortBy || undefined, sortOrder || undefined);
 
   return (
     <>
@@ -107,6 +113,8 @@ export default async function PoliciesPage({
             currentFilter={filter}
             currentStatus={status}
             currentType={type}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
           />
         </div>
       </main>

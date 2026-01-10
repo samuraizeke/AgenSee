@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  SortableTableHead,
+  type SortOrder,
+} from '@/components/ui/sortable-table-head';
 import {
   Select,
   SelectContent,
@@ -62,6 +66,8 @@ interface PoliciesTableProps {
   currentFilter: string;
   currentStatus: string;
   currentType: string;
+  sortBy: string | null;
+  sortOrder: SortOrder;
 }
 
 const typeLabels: Record<string, string> = {
@@ -128,11 +134,32 @@ export function PoliciesTable({
   totalPages,
   currentStatus,
   currentType,
+  sortBy,
+  sortOrder,
 }: PoliciesTableProps) {
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Prevent hydration mismatch with Radix UI components
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSort = (column: string, order: SortOrder) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (order) {
+      params.set('sortBy', column);
+      params.set('sortOrder', order);
+    } else {
+      params.delete('sortBy');
+      params.delete('sortOrder');
+    }
+    params.set('page', '1');
+    router.push(`/dashboard/policies?${params.toString()}`);
+  };
 
   const handlePolicyClick = (policy: Policy) => {
     setSelectedPolicy(policy);
@@ -179,44 +206,56 @@ export function PoliciesTable({
               <label className="text-xs font-medium text-muted-foreground">
                 Status
               </label>
-              <Select
-                value={currentStatus || 'all'}
-                onValueChange={(value) => handleFilterChange('status', value)}
-              >
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="All Statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="expired">Expired</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
+              {mounted ? (
+                <Select
+                  value={currentStatus || 'all'}
+                  onValueChange={(value) => handleFilterChange('status', value)}
+                >
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-9 w-[150px] items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">All Statuses</span>
+                </div>
+              )}
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">
                 Type
               </label>
-              <Select
-                value={currentType || 'all'}
-                onValueChange={(value) => handleFilterChange('type', value)}
-              >
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="All Types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="auto">Auto</SelectItem>
-                  <SelectItem value="home">Home</SelectItem>
-                  <SelectItem value="life">Life</SelectItem>
-                  <SelectItem value="health">Health</SelectItem>
-                  <SelectItem value="business">Business</SelectItem>
-                  <SelectItem value="umbrella">Umbrella</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
+              {mounted ? (
+                <Select
+                  value={currentType || 'all'}
+                  onValueChange={(value) => handleFilterChange('type', value)}
+                >
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="auto">Auto</SelectItem>
+                    <SelectItem value="home">Home</SelectItem>
+                    <SelectItem value="life">Life</SelectItem>
+                    <SelectItem value="health">Health</SelectItem>
+                    <SelectItem value="business">Business</SelectItem>
+                    <SelectItem value="umbrella">Umbrella</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-9 w-[150px] items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">All Types</span>
+                </div>
+              )}
             </div>
             {hasFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters}>
@@ -232,18 +271,54 @@ export function PoliciesTable({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="h-12 px-4 font-medium">Policy</TableHead>
-                <TableHead className="h-12 px-4 font-medium">Client</TableHead>
-                <TableHead className="h-12 px-4 font-medium w-[100px]">
-                  Type
-                </TableHead>
-                <TableHead className="h-12 px-4 font-medium">Premium</TableHead>
-                <TableHead className="h-12 px-4 font-medium">
-                  Expiration
-                </TableHead>
-                <TableHead className="h-12 px-4 font-medium w-[100px]">
-                  Status
-                </TableHead>
+                <SortableTableHead
+                  column="policy_number"
+                  label="Policy"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="client_name"
+                  label="Client"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="type"
+                  label="Type"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12 w-[100px]"
+                />
+                <SortableTableHead
+                  column="premium"
+                  label="Premium"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="expiration_date"
+                  label="Expiration"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="status"
+                  label="Status"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12 w-[100px]"
+                />
                 <TableHead className="h-12 px-4 font-medium w-[80px]">
                   Actions
                 </TableHead>
@@ -263,7 +338,7 @@ export function PoliciesTable({
                     <TableRow
                       key={policy.id}
                       className={`hover:bg-muted/50 ${
-                        isExpiringSoon ? 'bg-secondary/20' : ''
+                        isExpiringSoon ? 'bg-rose-500/10' : ''
                       }`}
                     >
                       <TableCell className="h-16 px-4">
@@ -377,7 +452,6 @@ export function PoliciesTable({
             </p>
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page <= 1}
@@ -389,7 +463,6 @@ export function PoliciesTable({
                 Page {page} of {totalPages}
               </div>
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page >= totalPages}

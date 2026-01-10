@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { LoginForm } from './LoginForm';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,10 +20,20 @@ export default async function LoginPage() {
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground">
           <div>
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-foreground/10 backdrop-blur">
-                <span className="font-heading text-2xl font-bold">A</span>
-              </div>
-              <span className="font-heading text-2xl font-semibold">AgenSee MS</span>
+              <Image
+                src="/AgenSeeLogo.png"
+                alt="AgenSee MS"
+                width={48}
+                height={48}
+                className="rounded-xl"
+              />
+              <Image
+                src="/AgenSeeWordmarkWhite.png"
+                alt="AgenSee MS"
+                width={160}
+                height={40}
+                className="h-10 w-auto"
+              />
             </div>
           </div>
           <div className="space-y-6">
@@ -50,10 +61,20 @@ export default async function LoginPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center">
             <div className="inline-flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <span className="font-heading text-xl font-bold text-primary-foreground">A</span>
-              </div>
-              <span className="font-heading text-xl font-semibold">AgenSee MS</span>
+              <Image
+                src="/AgenSeeLogo.png"
+                alt="AgenSee MS"
+                width={40}
+                height={40}
+                className="rounded-lg"
+              />
+              <Image
+                src="/AgenSeeWordmark.png"
+                alt="AgenSee MS"
+                width={130}
+                height={32}
+                className="h-8 w-auto"
+              />
             </div>
           </div>
 

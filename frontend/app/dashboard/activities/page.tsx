@@ -32,7 +32,9 @@ async function getActivities(
   page: number = 1,
   search?: string,
   type?: string,
-  completed?: string
+  completed?: string,
+  sortBy?: string,
+  sortOrder?: string
 ): Promise<ActivitiesResponse | null> {
   try {
     const params = new URLSearchParams({
@@ -48,6 +50,12 @@ async function getActivities(
     }
     if (completed && completed !== 'all') {
       params.set('completed', completed);
+    }
+    if (sortBy) {
+      params.set('sortBy', sortBy);
+    }
+    if (sortOrder) {
+      params.set('sortOrder', sortOrder);
     }
 
     const response = await fetch(
@@ -73,7 +81,7 @@ async function getActivities(
 export default async function ActivitiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string; type?: string; completed?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; type?: string; completed?: string; sortBy?: string; sortOrder?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -86,8 +94,10 @@ export default async function ActivitiesPage({
   const search = params.search || '';
   const type = params.type || '';
   const completed = params.completed || '';
+  const sortBy = params.sortBy || null;
+  const sortOrder = (params.sortOrder as 'asc' | 'desc' | null) || null;
 
-  const response = await getActivities(accessToken, page, search, type, completed);
+  const response = await getActivities(accessToken, page, search, type, completed, sortBy || undefined, sortOrder || undefined);
 
   return (
     <>
@@ -112,6 +122,8 @@ export default async function ActivitiesPage({
             typeFilter={type}
             completedFilter={completed}
             accessToken={accessToken}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
           />
         </div>
       </main>

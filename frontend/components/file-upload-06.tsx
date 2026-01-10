@@ -45,7 +45,7 @@ export default function FileUpload06() {
   const onFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
     if (selectedFiles) {
-      console.log("Files selected:", selectedFiles);
+      // Handle selected files
     }
   };
 
@@ -57,7 +57,7 @@ export default function FileUpload06() {
     event.preventDefault();
     const droppedFiles = event.dataTransfer.files;
     if (droppedFiles) {
-      console.log("Files dropped:", droppedFiles);
+      // Handle dropped files
     }
   };
 

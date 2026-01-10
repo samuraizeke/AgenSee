@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getClientApiUrl } from '@/lib/client-api-url';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  SortableTableHead,
+  type SortOrder,
+} from '@/components/ui/sortable-table-head';
 import {
   Tooltip,
   TooltipContent,
@@ -65,6 +69,8 @@ interface ActivitiesTableProps {
   typeFilter: string;
   completedFilter: string;
   accessToken: string;
+  sortBy: string | null;
+  sortOrder: SortOrder;
 }
 
 const activityTypeConfig: Record<ActivityType, { icon: React.ElementType; label: string; color: string }> = {
@@ -84,11 +90,32 @@ export function ActivitiesTable({
   typeFilter: initialTypeFilter,
   completedFilter: initialCompletedFilter,
   accessToken,
+  sortBy,
+  sortOrder,
 }: ActivitiesTableProps) {
+  const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState(initialSearch);
   const [activities, setActivities] = useState(initialActivities);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Prevent hydration mismatch with Radix UI components
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSort = (column: string, order: SortOrder) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (order) {
+      params.set('sortBy', column);
+      params.set('sortOrder', order);
+    } else {
+      params.delete('sortBy');
+      params.delete('sortOrder');
+    }
+    params.set('page', '1');
+    router.push(`/dashboard/activities?${params.toString()}`);
+  };
 
   const handleToggleComplete = async (id: string, completed: boolean) => {
     // Optimistically update UI
@@ -201,40 +228,50 @@ export function ActivitiesTable({
                   className="pl-9"
                 />
               </div>
-              <Button type="submit" variant="secondary">
-                Search
-              </Button>
+              <Button type="submit">Search</Button>
             </form>
             <div className="flex gap-2">
-              <Select
-                value={initialTypeFilter || 'all'}
-                onValueChange={(value) => updateParams({ type: value })}
-              >
-                <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="call">Call</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="task">Task</SelectItem>
-                  <SelectItem value="meeting">Meeting</SelectItem>
-                  <SelectItem value="note">Note</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={initialCompletedFilter || 'all'}
-                onValueChange={(value) => updateParams({ completed: value })}
-              >
-                <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="false">Pending</SelectItem>
-                  <SelectItem value="true">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+              {mounted ? (
+                <Select
+                  value={initialTypeFilter || 'all'}
+                  onValueChange={(value) => updateParams({ type: value })}
+                >
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="call">Call</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="task">Task</SelectItem>
+                    <SelectItem value="meeting">Meeting</SelectItem>
+                    <SelectItem value="note">Note</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-9 w-[130px] items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">All Types</span>
+                </div>
+              )}
+              {mounted ? (
+                <Select
+                  value={initialCompletedFilter || 'all'}
+                  onValueChange={(value) => updateParams({ completed: value })}
+                >
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="false">Pending</SelectItem>
+                    <SelectItem value="true">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-9 w-[130px] items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">All Status</span>
+                </div>
+              )}
               {hasFilters && (
                 <Button type="button" variant="ghost" onClick={clearFilters}>
                   <X className="h-4 w-4 mr-1" />
@@ -251,11 +288,46 @@ export function ActivitiesTable({
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="h-12 px-4 font-medium w-[50px]">Done</TableHead>
-                <TableHead className="h-12 px-4 font-medium w-[100px]">Type</TableHead>
-                <TableHead className="h-12 px-4 font-medium">Description</TableHead>
-                <TableHead className="h-12 px-4 font-medium">Client</TableHead>
-                <TableHead className="h-12 px-4 font-medium">Due Date</TableHead>
-                <TableHead className="h-12 px-4 font-medium">Created</TableHead>
+                <SortableTableHead
+                  column="type"
+                  label="Type"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12 w-[100px]"
+                />
+                <SortableTableHead
+                  column="description"
+                  label="Description"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="client_name"
+                  label="Client"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="due_date"
+                  label="Due Date"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
+                <SortableTableHead
+                  column="created_at"
+                  label="Created"
+                  currentSort={sortBy}
+                  currentOrder={sortOrder}
+                  onSort={handleSort}
+                  className="h-12"
+                />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -347,7 +419,6 @@ export function ActivitiesTable({
             </p>
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page <= 1}
@@ -359,7 +430,6 @@ export function ActivitiesTable({
                 Page {page} of {totalPages}
               </div>
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page >= totalPages}

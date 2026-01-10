@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -13,9 +12,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Search, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GlobalSearch } from "@/components/search/GlobalSearch";
 
 interface DashboardHeaderProps {
   title?: string;
@@ -121,13 +121,8 @@ export function DashboardHeader({
 
       <div className="ml-auto flex items-center gap-3">
         {/* Search */}
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search clients, policies..."
-            className="w-64 pl-9 bg-muted/50 border-border focus:bg-card"
-          />
+        <div className="hidden md:block w-64">
+          <GlobalSearch />
         </div>
 
         {/* Action Button */}

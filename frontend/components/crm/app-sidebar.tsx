@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,9 +22,9 @@ import {
   Settings,
   Users,
   Bell,
-  Search,
   ChevronDown,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -81,12 +82,18 @@ const navigation = [
 ];
 
 export function AppSidebar({ user, onSignOut }: AppSidebarProps) {
+  const [mounted, setMounted] = useState(false);
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
 
   const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
   const userEmail = user?.email || "User";
+
+  // Prevent hydration mismatch with Radix UI components
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -99,13 +106,21 @@ export function AppSidebar({ user, onSignOut }: AppSidebarProps) {
         )}
       >
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <span className="font-heading text-lg font-bold text-primary-foreground">A</span>
-          </div>
+          <Image
+            src="/AgenSeeLogo.png"
+            alt="AgenSee MS"
+            width={36}
+            height={36}
+            className="rounded-lg"
+          />
           {!isCollapsed && (
-            <span className="font-heading text-xl font-semibold text-sidebar-foreground">
-              AgenSee MS
-            </span>
+            <Image
+              src="/AgenSeeWordmarkWhite.png"
+              alt="AgenSee MS"
+              width={90}
+              height={20}
+              className="h-5 w-auto"
+            />
           )}
         </Link>
 
@@ -138,22 +153,6 @@ export function AppSidebar({ user, onSignOut }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent className="gap-2 px-2 py-4">
-        {/* Search Button */}
-        {!isCollapsed && (
-          <div className="mb-2 px-2">
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2 border-sidebar-border bg-sidebar-accent/50 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-            >
-              <Search className="h-4 w-4" />
-              <span className="text-sm">Search...</span>
-              <kbd className="ml-auto rounded border border-sidebar-border bg-sidebar px-1.5 py-0.5 text-[10px] text-sidebar-foreground/50">
-                /
-              </kbd>
-            </Button>
-          </div>
-        )}
-
         {/* Navigation */}
         <SidebarMenu>
           {navigation.map((item) => {
@@ -209,63 +208,92 @@ export function AppSidebar({ user, onSignOut }: AppSidebarProps) {
 
         {/* User Menu */}
         <div className="mt-2 border-t border-sidebar-border pt-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start gap-3 px-3 py-2.5 h-auto hover:bg-sidebar-accent",
-                  isCollapsed && "justify-center px-0"
-                )}
+          {mounted ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start gap-3 px-3 py-2.5 h-auto hover:bg-sidebar-accent",
+                    isCollapsed && "justify-center px-0"
+                  )}
+                >
+                  <Avatar className="h-8 w-8 border border-sidebar-border">
+                    <AvatarFallback className="bg-primary text-sm font-medium text-primary-foreground">
+                      {userInitial}
+                    </AvatarFallback>
+                  </Avatar>
+                  {!isCollapsed && (
+                    <>
+                      <div className="flex flex-col items-start text-left">
+                        <span className="text-sm font-medium text-sidebar-foreground">
+                          {userEmail.split("@")[0]}
+                        </span>
+                        <span className="text-xs text-sidebar-foreground/50 truncate max-w-[140px]">
+                          {userEmail}
+                        </span>
+                      </div>
+                      <ChevronDown className="ml-auto h-4 w-4 text-sidebar-foreground/50" />
+                    </>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align={isCollapsed ? "center" : "start"}
+                side="top"
+                className="w-56"
               >
-                <Avatar className="h-8 w-8 border border-sidebar-border">
-                  <AvatarFallback className="bg-primary text-sm font-medium text-primary-foreground">
-                    {userInitial}
-                  </AvatarFallback>
-                </Avatar>
-                {!isCollapsed && (
-                  <>
-                    <div className="flex flex-col items-start text-left">
-                      <span className="text-sm font-medium text-sidebar-foreground">
-                        {userEmail.split("@")[0]}
-                      </span>
-                      <span className="text-xs text-sidebar-foreground/50 truncate max-w-[140px]">
-                        {userEmail}
-                      </span>
-                    </div>
-                    <ChevronDown className="ml-auto h-4 w-4 text-sidebar-foreground/50" />
-                  </>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align={isCollapsed ? "center" : "start"}
-              side="top"
-              className="w-56"
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">Signed in as</p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {userEmail}
+                  </p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/settings" className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={onSignOut}
+                  className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-3 px-3 py-2.5 h-auto hover:bg-sidebar-accent",
+                isCollapsed && "justify-center px-0"
+              )}
             >
-              <div className="px-2 py-1.5">
-                <p className="text-sm font-medium">Signed in as</p>
-                <p className="text-sm text-muted-foreground truncate">
-                  {userEmail}
-                </p>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/settings" className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={onSignOut}
-                className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <Avatar className="h-8 w-8 border border-sidebar-border">
+                <AvatarFallback className="bg-primary text-sm font-medium text-primary-foreground">
+                  {userInitial}
+                </AvatarFallback>
+              </Avatar>
+              {!isCollapsed && (
+                <>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="text-sm font-medium text-sidebar-foreground">
+                      {userEmail.split("@")[0]}
+                    </span>
+                    <span className="text-xs text-sidebar-foreground/50 truncate max-w-[140px]">
+                      {userEmail}
+                    </span>
+                  </div>
+                  <ChevronDown className="ml-auto h-4 w-4 text-sidebar-foreground/50" />
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

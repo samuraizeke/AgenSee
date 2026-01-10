@@ -29,7 +29,9 @@ interface ClientsResponse {
 async function getClients(
   accessToken: string,
   page: number = 1,
-  search?: string
+  search?: string,
+  sortBy?: string,
+  sortOrder?: string
 ): Promise<ClientsResponse | null> {
   try {
     const params = new URLSearchParams({
@@ -39,6 +41,12 @@ async function getClients(
 
     if (search) {
       params.set('search', search);
+    }
+    if (sortBy) {
+      params.set('sortBy', sortBy);
+    }
+    if (sortOrder) {
+      params.set('sortOrder', sortOrder);
     }
 
     const response = await fetch(
@@ -64,7 +72,7 @@ async function getClients(
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; sortBy?: string; sortOrder?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -75,8 +83,10 @@ export default async function ClientsPage({
   const accessToken = session?.access_token || '';
   const page = parseInt(params.page || '1');
   const search = params.search || '';
+  const sortBy = params.sortBy || null;
+  const sortOrder = (params.sortOrder as 'asc' | 'desc' | null) || null;
 
-  const response = await getClients(accessToken, page, search);
+  const response = await getClients(accessToken, page, search, sortBy || undefined, sortOrder || undefined);
 
   return (
     <>
@@ -98,6 +108,8 @@ export default async function ClientsPage({
             page={page}
             totalPages={response?.data.totalPages || 1}
             search={search}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
           />
         </div>
       </main>

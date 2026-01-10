@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { searchApi, type SearchResult } from '@/lib/api';
+import { createClient } from '@/lib/supabase/client';
 
 export function GlobalSearch() {
   const [query, setQuery] = useState('');
@@ -22,7 +23,11 @@ export function GlobalSearch() {
     setIsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const response = await searchApi.search(query, 5);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
+        const response = await searchApi.search(query, 5, token);
         if (response.success && response.data) {
           setResults(response.data);
         }
@@ -86,11 +91,11 @@ export function GlobalSearch() {
           }}
           onFocus={() => query.length >= 2 && setIsOpen(true)}
           placeholder="Search clients, policies..."
-          className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-border bg-muted/50 py-2 pl-10 pr-4 text-sm focus:border-primary focus:bg-card focus:outline-none focus:ring-1 focus:ring-primary"
         />
         {/* Search icon */}
         <svg
-          className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+          className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -105,7 +110,7 @@ export function GlobalSearch() {
         {/* Loading spinner */}
         {isLoading && (
           <svg
-            className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-gray-400"
+            className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted-foreground"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -128,9 +133,9 @@ export function GlobalSearch() {
 
       {/* Results Dropdown */}
       {isOpen && query.length >= 2 && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-auto rounded-lg border border-border bg-card shadow-lg">
           {!hasResults && !isLoading && (
-            <div className="p-4 text-center text-sm text-gray-500">
+            <div className="p-4 text-center text-sm text-muted-foreground">
               No results found for &quot;{query}&quot;
             </div>
           )}
@@ -138,7 +143,7 @@ export function GlobalSearch() {
           {/* Clients Section */}
           {results && results.clients.length > 0 && (
             <div>
-              <div className="sticky top-0 flex items-center gap-2 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <div className="sticky top-0 flex items-center gap-2 bg-muted px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -148,19 +153,19 @@ export function GlobalSearch() {
                 <button
                   key={client.id}
                   onClick={() => handleResultClick('client', client.id)}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/50"
                 >
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-gray-900">
+                    <div className="truncate text-sm font-medium text-foreground">
                       {client.first_name} {client.last_name}
                     </div>
                     {client.email && (
-                      <div className="truncate text-xs text-gray-500">{client.email}</div>
+                      <div className="truncate text-xs text-muted-foreground">{client.email}</div>
                     )}
                   </div>
                 </button>
@@ -171,7 +176,7 @@ export function GlobalSearch() {
           {/* Policies Section */}
           {results && results.policies.length > 0 && (
             <div>
-              <div className="sticky top-0 flex items-center gap-2 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <div className="sticky top-0 flex items-center gap-2 bg-muted px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -181,22 +186,22 @@ export function GlobalSearch() {
                 <button
                   key={policy.id}
                   onClick={() => handleResultClick('policy', policy.id, policy.client_id)}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/50"
                 >
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-gray-900">
+                    <div className="truncate text-sm font-medium text-foreground">
                       {policy.policy_number} - {policy.carrier}
                     </div>
                     {policy.client_name && (
-                      <div className="truncate text-xs text-gray-500">{policy.client_name}</div>
+                      <div className="truncate text-xs text-muted-foreground">{policy.client_name}</div>
                     )}
                   </div>
-                  <span className="flex-shrink-0 rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                  <span className="flex-shrink-0 rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                     {policy.type}
                   </span>
                 </button>
@@ -207,7 +212,7 @@ export function GlobalSearch() {
           {/* Activities Section */}
           {results && results.activities.length > 0 && (
             <div>
-              <div className="sticky top-0 flex items-center gap-2 bg-gray-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <div className="sticky top-0 flex items-center gap-2 bg-muted px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -217,21 +222,21 @@ export function GlobalSearch() {
                 <button
                   key={activity.id}
                   onClick={() => handleResultClick('activity', activity.id)}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/50"
                 >
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-gray-900 capitalize">
+                    <div className="truncate text-sm font-medium text-foreground capitalize">
                       {activity.type}: {activity.description.length > 50
                         ? activity.description.slice(0, 50) + '...'
                         : activity.description}
                     </div>
                     {activity.client_name && (
-                      <div className="truncate text-xs text-gray-500">{activity.client_name}</div>
+                      <div className="truncate text-xs text-muted-foreground">{activity.client_name}</div>
                     )}
                   </div>
                 </button>

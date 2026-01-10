@@ -144,7 +144,7 @@ export default async function ClientDetailPage({
 
   return (
     <>
-      <DashboardHeader action={{ label: 'Add Policy', href: `/dashboard/policies/new?client_id=${client.id}` }} />
+      <DashboardHeader />
       <main className="flex-1 overflow-y-auto">
         <div className="container max-w-7xl mx-auto p-6 space-y-6">
           {/* Header */}

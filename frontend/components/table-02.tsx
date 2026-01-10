@@ -164,7 +164,6 @@ export default function Table02() {
     setPendingAction({ id: task.id, type: actionType });
     setTimeout(() => {
       setPendingAction(null);
-      console.log(`Action "${actionType}" completed for task:`, task.title);
     }, 1000);
   };
 

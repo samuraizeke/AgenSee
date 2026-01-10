@@ -12,7 +12,13 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Clock, ArrowRight, User, Calendar, DollarSign, FileText, Building } from 'lucide-react';
+import { Clock, ArrowRight, User, Calendar, DollarSign, FileText, Building, Eye } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface RenewalPolicy {
   id: string;
@@ -54,7 +60,7 @@ export function UpcomingRenewals({ renewals }: UpcomingRenewalsProps) {
 
   return (
     <>
-      <Card className="lg:col-span-2">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-semibold">
             Upcoming Renewals
@@ -75,13 +81,14 @@ export function UpcomingRenewals({ renewals }: UpcomingRenewalsProps) {
                   className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
                 >
                   <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold ${
+                    className={`flex h-12 w-12 flex-col items-center justify-center rounded-full ${
                       policy.days_until_expiration <= 14
                         ? 'bg-secondary text-secondary-foreground'
                         : 'bg-accent text-accent-foreground'
                     }`}
                   >
-                    {policy.days_until_expiration}
+                    <span className="text-sm font-semibold leading-none">{policy.days_until_expiration}</span>
+                    <span className="text-[10px] leading-none mt-0.5">days</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <Link
@@ -102,13 +109,20 @@ export function UpcomingRenewals({ renewals }: UpcomingRenewalsProps) {
                       ${Number(policy.premium).toLocaleString()}/yr
                     </p>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePolicyClick(policy)}
-                  >
-                    View
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handlePolicyClick(policy)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>View Details</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               ))}
             </div>

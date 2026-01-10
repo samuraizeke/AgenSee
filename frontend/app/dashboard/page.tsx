@@ -5,6 +5,12 @@ import { DashboardHeader } from '@/components/crm/dashboard-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   Users,
   FileText,
   Clock,
@@ -126,13 +132,6 @@ export default async function DashboardPage() {
               trend="+5% from last month"
             />
             <StatCard
-              title="Expiring Soon"
-              value={stats?.expiring_soon ?? 0}
-              href="/dashboard/policies?filter=expiring"
-              icon={<Clock className="h-5 w-5" />}
-              variant={stats?.expiring_soon > 0 ? 'warning' : 'default'}
-            />
-            <StatCard
               title="Total Premium"
               value={
                 stats?.total_premium
@@ -143,60 +142,63 @@ export default async function DashboardPage() {
               icon={<DollarSign className="h-5 w-5" />}
               trend="+8% from last month"
             />
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-3">
-            {/* Upcoming Renewals */}
-            <UpcomingRenewals renewals={upcomingRenewals} />
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-semibold">
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full justify-start gap-3" asChild>
-                  <Link href="/dashboard/clients/new">
-                    <Users className="h-5 w-5" />
-                    <div className="text-left">
-                      <div className="font-medium">New Client</div>
-                      <div className="text-xs opacity-80">Add a new client</div>
-                    </div>
-                  </Link>
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="w-full justify-start gap-3"
-                  asChild
-                >
-                  <Link href="/dashboard/policies/new">
-                    <FileText className="h-5 w-5" />
-                    <div className="text-left">
-                      <div className="font-medium">New Policy</div>
-                      <div className="text-xs opacity-80">Create a policy</div>
-                    </div>
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-3"
-                  asChild
-                >
-                  <Link href="/dashboard/activities/new">
+            <Card className="transition-all hover:shadow-md h-full">
+              <CardContent className="p-6 h-full flex flex-col">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-lg p-2.5 bg-primary/10 text-primary">
                     <Plus className="h-5 w-5" />
-                    <div className="text-left">
-                      <div className="font-medium">New Task</div>
-                      <div className="text-xs text-muted-foreground">
-                        Schedule an activity
-                      </div>
-                    </div>
-                  </Link>
-                </Button>
+                  </div>
+                </div>
+                <div className="mt-4 space-y-1 flex-1">
+                  <p className="text-sm font-medium text-muted-foreground">Quick Actions</p>
+                  <div className="flex gap-2 pt-1">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/dashboard/clients/new"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                          >
+                            <Users className="h-4 w-4" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>New Client</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/dashboard/policies/new"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>New Policy</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/dashboard/activities/new"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                          >
+                            <Clock className="h-4 w-4" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>New Task</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
+
+          {/* Upcoming Renewals */}
+          <UpcomingRenewals renewals={upcomingRenewals} />
         </div>
       </main>
     </>

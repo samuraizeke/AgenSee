@@ -23,14 +23,21 @@ class ApiError extends Error {
 
 async function fetchApi<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit & { token?: string } = {}
 ): Promise<T> {
+  const { token, ...fetchOptions } = options;
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...fetchOptions.headers,
+  };
+
+  if (token) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    ...fetchOptions,
+    headers,
   });
 
   const data = await response.json();
@@ -286,11 +293,11 @@ export interface SearchResult {
 
 // Search API
 export const searchApi = {
-  search: (q: string, limit?: number) => {
+  search: (q: string, limit?: number, token?: string) => {
     const params = new URLSearchParams();
     params.set('q', q);
     if (limit) params.set('limit', limit.toString());
-    return fetchApi<ApiResponse<SearchResult>>(`/search?${params}`);
+    return fetchApi<ApiResponse<SearchResult>>(`/search?${params}`, { token });
   },
 };
 

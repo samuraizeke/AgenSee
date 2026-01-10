@@ -68,7 +68,7 @@ router.get('/', async (req: Request, res: Response<ApiResponse<SearchResult>>): 
     }
 
     // Search policies by policy_number, carrier
-    const { data: policiesRaw, error: policiesError } = await supabase
+    const { data: policiesByFields, error: policiesError } = await supabase
       .from('policies')
       .select(`
         id, policy_number, carrier, type, client_id,
@@ -83,6 +83,35 @@ router.get('/', async (req: Request, res: Response<ApiResponse<SearchResult>>): 
     if (policiesError) {
       throw new AppError('Failed to search policies', 500);
     }
+
+    // Search policies by client name (separate query since we can't filter on joined columns)
+    const { data: policiesByClientName, error: policiesByClientError } = await supabase
+      .from('policies')
+      .select(`
+        id, policy_number, carrier, type, client_id,
+        clients!inner (first_name, last_name)
+      `)
+      .or(
+        `clients.first_name.ilike.%${query}%,` +
+        `clients.last_name.ilike.%${query}%`
+      )
+      .limit(limit);
+
+    if (policiesByClientError) {
+      throw new AppError('Failed to search policies by client name', 500);
+    }
+
+    // Merge and deduplicate policy results
+    const policyMap = new Map<string, typeof policiesByFields[0]>();
+    for (const p of policiesByFields || []) {
+      policyMap.set(p.id, p);
+    }
+    for (const p of policiesByClientName || []) {
+      if (!policyMap.has(p.id)) {
+        policyMap.set(p.id, p);
+      }
+    }
+    const policiesRaw = Array.from(policyMap.values()).slice(0, limit);
 
     // Search activities by description
     const { data: activitiesRaw, error: activitiesError } = await supabase

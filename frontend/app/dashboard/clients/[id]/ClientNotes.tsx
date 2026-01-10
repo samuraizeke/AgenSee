@@ -90,7 +90,7 @@ export function ClientNotes({ clientId, initialNotes }: ClientNotesProps) {
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="inline-flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <svg
               className="h-4 w-4"
@@ -105,7 +105,6 @@ export function ClientNotes({ clientId, initialNotes }: ClientNotesProps) {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Add Note
           </button>
         )}
       </div>
@@ -151,7 +150,7 @@ export function ClientNotes({ clientId, initialNotes }: ClientNotesProps) {
 
       {notes.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          No notes yet. Click &quot;Add Note&quot; to create one.
+          No notes yet. Click the + button to create one.
         </p>
       ) : (
         <div className="space-y-4">
